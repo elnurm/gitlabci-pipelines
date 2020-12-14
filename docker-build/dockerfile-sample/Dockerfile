@@ -1,5 +1,5 @@
 FROM openjdk:11-jre
-LABEL Author="Andrei_Stryia@epam.com"
+LABEL Author="elnur.mammadov.n@hotmail.com"
 
 RUN wget -q http://nlp.stanford.edu/software/stanford-corenlp-full-2018-10-05.zip
 RUN unzip stanford-corenlp-full-2018-10-05.zip &&\
