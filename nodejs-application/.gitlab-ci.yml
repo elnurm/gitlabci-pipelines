@@ -1,0 +1,60 @@
+image: "node:14"
+
+stages:
+    - Build
+    - Lint - Jest Test
+    - Deploy
+
+cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+    - ./app-code/node_modules/
+
+build:
+    stage: Build
+    before_script:
+        - cd ./app-code && npm install
+    script:
+        - npm run build:ci
+    only:
+        refs:
+            - development
+            - merge_requests
+    artifacts:
+        paths:
+            - ./some/path/with/artifacts
+        expire_in: 1 hour
+
+lint:
+    stage: Lint - Jest Test
+    script:
+        - cd ./some/path/with/artifacts && npm run lint
+    only:
+        refs:
+            - development
+            - merge_requests
+     
+jest_test:
+    stage: Lint - Jest Test
+    script:
+        - cd ./some/path/with/artifacts && npm run test:ci
+    only:
+        refs:
+            - development
+            - merge_requests
+
+deploy:
+    image: "alpine:3.12"
+    stage: Deploy
+    cache: {}
+    before_script:
+        - apk update && apk upgrade && apk add bash jq git python3 py3-pip > /dev/null && pip3 install awscli > /dev/null
+        - PACKAGE_VERSION=$(cat app/package.json | jq -r '.version')
+        - PACKAGE_VERSION="${PACKAGE_VERSION}.${CI_JOB_ID}.${CI_COMMIT_SHORT_SHA}"
+        - BUILD_DIST_FOLDER=$(cat app/angular.json | jq -r ".projects.\"app-code\".architect.build.options.outputPath")
+    script:
+        - echo $BUILD_DIST_FOLDER
+        - cd ci/scripts/aws && chmod 774 gitlabci-bash-script.sh && ./gitlabci-bash-script.sh $AWS_ENVIRONMENT_QA $PACKAGE_VERSION $AWS_ACCESS_KEY_ID_QA $AWS_SECRET_ACCESS_KEY_QA $BUILD_DIST_FOLDER
+    only:
+        refs:
+            - development
