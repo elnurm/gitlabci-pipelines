@@ -1,0 +1,20 @@
+{
+    "Version": "2008-10-17",
+    "Statement": [
+        {
+            "Sid": "ContainerRepositoryPolicy-##POLICY_ID##",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": ["ARN","ARN2"]
+            },
+            "Action": [
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:ListImages",
+                "ecr:DescribeImages",
+                "ecr:DescribeRepositories"
+            ]
+        }
+    ]
+}

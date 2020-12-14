@@ -1,0 +1,13 @@
+stages:
+    - Docker Build
+
+docker_build:
+    stage: Docker Build
+    before_script:
+        - sudo apt-get update -yqq && sudo apt-get upgrade -yqq && sudo apt-get -yqq install python3 python3-pip && sudo pip3 -q install awscli
+    script:
+        cd $CI_PROJECT_DIR/src/configuration/docker && sudo ./build.sh $AWS_ACCESS_KEY_ID_DOCKER $AWS_SECRET_ACCESS_KEY_DOCKER
+    only:
+        - master
+    tags:
+        - shell
